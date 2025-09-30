@@ -1,0 +1,407 @@
+/* client/src/App.css (Extended for LibraryPro Layout) */
+
+/* --- General Reset & Layout --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --color-primary: #6a0dad; /* Deep Purple */
+    --color-secondary: #ff7f50; /* Coral */
+    --color-light-bg: #f5f2fa;
+    --color-sidebar-bg: #ffffff;
+    --color-text: #2c1a3c;
+    --color-card-bg: #ffffff;
+}
+
+.library-app {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--color-light-bg);
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 250px;
+    background-color: var(--color-sidebar-bg);
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    padding: 0 20px 30px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.sidebar .nav-item {
+    padding: 12px 20px;
+    text-decoration: none;
+    color: var(--color-text);
+    font-weight: 500;
+    display: block;
+    transition: background-color 0.2s, border-left 0.2s;
+    border-left: 4px solid transparent;
+}
+
+.sidebar .nav-item:hover {
+    background-color: #f0e8ff;
+}
+
+.sidebar .nav-item.active {
+    background-color: #e6d4ff;
+    border-left-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* --- Main Content & Header --- */
+.main-content {
+    flex-grow: 1;
+    padding: 30px;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background-color: var(--color-sidebar-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.main-header h2 {
+    color: var(--color-text);
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.main-header p {
+    color: #888;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.notification {
+    font-size: 1.5rem;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.user-name, .user-title {
+    display: block;
+    text-align: right;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+.user-title { color: var(--color-primary); font-weight: bold; }
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; }
+
+
+/* --- Catalogue Page Specifics --- */
+
+.catalogue-header {
+    margin-bottom: 20px;
+}
+.catalogue-title {
+    color: var(--color-primary);
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+.catalogue-subtitle {
+    color: #666;
+}
+
+/* Search Bar (Reusing and updating existing styles) */
+.search-bar-container {
+    padding: 20px;
+    background-color: var(--color-sidebar-bg);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+.search-bar-container input {
+    flex-grow: 1;
+    max-width: none;
+}
+
+/* Genre Filters (Pill Style) */
+.genre-filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 25px;
+}
+.genre-btn {
+    padding: 8px 15px;
+    border-radius: 20px; /* Pill shape */
+    background-color: #f0f0f0;
+    color: #444;
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+.genre-btn.active, .genre-btn:hover {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+/* Book List Grid */
+.book-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 30px;
+}
+
+/* Book Card Overhaul (Inspired by the image) */
+.book-card {
+    background-color: var(--color-card-bg);
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: transform 0.2s;
+    height: auto;
+    border: none;
+}
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.card-top-bar {
+    height: 120px;
+    background: linear-gradient(135deg, #a8c0ff, #3f2b96); /* Example gradient */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+}
+
+.card-icons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+.card-icon-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.card-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.genre-tag {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    align-self: flex-start;
+}
+
+.card-content {
+    padding: 15px;
+    text-align: center;
+}
+
+.book-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 5px;
+}
+.book-author {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+/* --- Floating Button & Modal --- */
+.add-book-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 15px 25px;
+    background-color: var(--color-secondary);
+    color: white;
+    font-weight: bold;
+    border-radius: 30px;
+    box-shadow: 0 8px 15px rgba(255, 127, 80, 0.4);
+    z-index: 50;
+    transition: transform 0.2s;
+}
+.add-book-btn:hover {
+    transform: translateY(-2px);
+    background-color: #ff6347;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content input, .modal-content select {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 15px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    background-color: #ccc;
+    color: var(--color-text);
+}
+.btn-primary {
+    background-color: var(--color-primary);
+}
+
+/* Toast styling remains similar to your last correct version */
+
+/* --- Member Management Specific Styles --- */
+
+/* Member Card Grid */
+.member-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 25px;
+}
+
+/* Individual Member Card */
+.member-card {
+    background-color: var(--color-card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-left: 5px solid var(--color-primary); /* Purple accent */
+    transition: transform 0.2s;
+}
+
+.member-card:hover {
+    transform: translateY(-2px);
+}
+
+.member-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 10px;
+}
+
+.member-detail {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Header and Icons */
+.member-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+/* Footer (Active Borrows/Dates) */
+.member-card .card-footer {
+    padding-top: 15px;
+    margin-top: 15px;
+    border-top: 1px dashed #eee;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #444;
+}
+
+/* --- Member Type Tags (The colored pills) --- */
+.member-type-tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+/* Specific Tag Colors */
+.tag-student {
+    background-color: #3498db; /* Blue */
+}
+.tag-faculty {
+    background-color: #2ecc71; /* Green */
+}
+.tag-public {
+    background-color: #f39c12; /* Orange */
+}
+.tag-member {
+    background-color: #9b59b6; /* General Purple */
+}
+
+/* Adjust Add Member Button Color */
+/* Assuming the AddBookButton component is used here, override its style */
+.member-management-view .add-book-btn {
+    background-color: #9b59b6; 
+    box-shadow: 0 8px 15px rgba(155, 89, 182, 0.4);
+}
+.member-management-view .add-book-btn:hover {
+    background-color: #8e44ad;
+}
