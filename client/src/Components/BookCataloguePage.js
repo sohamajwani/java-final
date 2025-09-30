@@ -1,4 +1,4 @@
-// client/src/Components/BookCataloguePage.js (Finalized Code)
+// client/src/Components/BookCataloguePage.js (Updated to Filter by Available Books)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
@@ -20,8 +20,8 @@ function BookCataloguePage() {
     // --- STATE ADDITIONS ---
     const [books, setBooks] = useState([]);
     const [genres, setGenres] = useState([]);
-    const [users, setUsers] = useState([]); // <-- ADDED STATE
-    const [selectedUserId, setSelectedUserId] = useState(''); // <-- ADDED STATE (starts empty)
+    const [users, setUsers] = useState([]); 
+    const [selectedUserId, setSelectedUserId] = useState(''); 
     const [currentGenre, setCurrentGenre] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [toast, setToast] = useState({ msg: '', type: '' });
@@ -34,13 +34,17 @@ function BookCataloguePage() {
         setTimeout(() => setToast({ msg: '', type: '' }), 3000);
     };
     
-    // --- Data Fetching ---
+    // --- Data Fetching (MODIFIED) ---
     const fetchBooks = useCallback(async (genre = null, isSearch = false) => {
         try {
-            let url = `${API_BASE}/books`;
+            // CRITICAL FIX: Only fetch available books by default
+            let url = `${API_BASE}/books?available=true`; 
+            
             if (genre && !isSearch) {
-                url += `?genre=${encodeURIComponent(genre)}`;
+                // If filtering by genre, append it using '&'
+                url += `&genre=${encodeURIComponent(genre)}`; 
             }
+            
             const response = await axios.get(url);
             setBooks(response.data);
             setCurrentGenre(genre);
@@ -56,10 +60,10 @@ function BookCataloguePage() {
                 // Fetch genres and users concurrently
                 const [genresRes, usersRes] = await Promise.all([
                     axios.get(`${API_BASE}/genres`),
-                    axios.get(`${API_BASE}/users`), // <-- FETCHING USERS
+                    axios.get(`${API_BASE}/users`), 
                 ]);
                 setGenres(genresRes.data);
-                setUsers(usersRes.data); // <-- SETTING USERS
+                setUsers(usersRes.data); 
                 
                 // Set the selectedUserId to the first user if the list isn't empty, otherwise keep it empty.
                 if (usersRes.data.length > 0) {
@@ -97,6 +101,8 @@ function BookCataloguePage() {
             return;
         }
         try {
+            // Note: Search endpoint still returns ALL books (available or not), 
+            // but after the search, the view returns to fetching only available books.
             const url = `${API_BASE}/search?q=${encodeURIComponent(query)}`;
             const response = await axios.get(url);
             setBooks(response.data);
@@ -106,9 +112,9 @@ function BookCataloguePage() {
         }
     };
     
-    // --- Borrow/Return Handler (FINAL LOGIC) ---
+    // --- Borrow/Return Handler (MODIFIED) ---
     const handleBorrowReturn = async (endpoint, bookId) => {
-        const userId = selectedUserId; // <-- USING SELECTED USER ID
+        const userId = selectedUserId; 
 
         if (endpoint === 'borrow' && !userId) {
             showToast('Please select a user to borrow a book.', 'error');
@@ -123,7 +129,9 @@ function BookCataloguePage() {
             const response = await axios.post(`${API_BASE}/${endpoint}`, payload);
             
             showToast(response.data.message, 'success');
-            fetchBooks(currentGenre); // Refresh list
+            
+            // CRITICAL FIX: Refresh the list after borrowing to remove the book from the catalogue view
+            fetchBooks(currentGenre); 
         } catch (error) {
             const msg = error.response?.data?.error || `Action failed: ${endpoint}`;
             showToast(msg, 'error');

@@ -1,4 +1,4 @@
-// server.js (Finalized Backend with Active Borrows Calculation)
+// server.js (Temporarily Fixed for Application Loading)
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -19,6 +19,7 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Wrapper for db.query to use async/await (using Promises from mysql2/promise)
 const query = async (sql, params) => {
+    // Note: This relies on the destructuring [results] which is correct for mysql2/promise.
     const [results] = await db.query(sql, params); 
     return results;
 };
@@ -69,9 +70,9 @@ async function seedBooks() {
 
 const apiRouter = express.Router();
 
-// 📚 Get all books
+// 📚 Get all books (MODIFIED TO INCLUDE AVAILABILITY FILTERING)
 apiRouter.get("/books", async (req, res) => {
-    const { genre } = req.query;
+    const { genre, available } = req.query;
 
     let sql = `
         SELECT
@@ -85,10 +86,23 @@ apiRouter.get("/books", async (req, res) => {
             ON bb.user_id = u.id
     `;
     const params = [];
+    const conditions = [];
 
+    // 1. Filter by Genre 
     if (genre) {
-        sql += " WHERE b.genre = ?";
+        conditions.push("b.genre = ?");
         params.push(genre);
+    }
+
+    // 2. Filter by Availability (NEW LOGIC)
+    if (available === 'true') {
+        conditions.push("bb.id IS NULL"); 
+    } else if (available === 'false') {
+        conditions.push("bb.id IS NOT NULL");
+    }
+
+    if (conditions.length > 0) {
+        sql += " WHERE " + conditions.join(" AND ");
     }
 
     sql += " ORDER BY b.title";
@@ -218,30 +232,36 @@ apiRouter.get("/search", async (req, res) => {
 
 /* --------------------- 👤 MEMBER MANAGEMENT ROUTES --------------------- */
 
-// 👤 Get users (Member list - IMPLEMENTING ACTIVE BORROWS CALCULATION)
+// 👤 Get users (Member list - TEMPORARILY REVERTED TO SIMPLE SELECT)
+// 👤 Get users (Member list - Reverting to complex query to get clear error)
+// server.js (Simplified GET /api/books for Guaranteed Filtering)
+
 apiRouter.get("/users", async (req, res) => {
     try {
-        // --- REPLACED WITH COMPLEX SQL FOR ACTIVE BORROWS COUNT ---
         const sql = `
             SELECT 
                 u.id, 
                 u.name, 
                 u.email, 
                 u.type,
-                COUNT(bb.book_id) AS active_borrows
+                COUNT(bb.book_id) AS active_borrows  -- This calculates the count
             FROM users u
             LEFT JOIN borrowed_books bb 
                 ON u.id = bb.user_id AND bb.return_date IS NULL
             GROUP BY u.id, u.name, u.email, u.type
             ORDER BY u.name;
         `;
-        // --------------------------------------------------------
+        
         const results = await query(sql); 
         res.json(results);
     } catch (err) {
-        res.status(500).json({ error: "DB error: " + err.message });
+        // Log the error to ensure the connection itself is working
+        console.error("DATABASE ERROR on /users:", err.message);
+        res.status(500).json({ error: "DB error: Failed to retrieve member data with loan count." });
     }
 });
+
+
 
 // ➕ Add new user (Member)
 apiRouter.post("/users", async (req, res) => {

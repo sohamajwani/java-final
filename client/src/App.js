@@ -10,7 +10,7 @@ import MainLayout from './Components/Layout/MainLayout';
 import Dashboard from './Components/DashboardPage.js';
 import BookCatalogue from './Components/BookCataloguePage.js'; 
 import Members from './Components/Members.js';
-import BorrowReturn from './Components/BorrowReturnPage.js';
+import BorrowReturn from './Components/BorrowReturn.js';
 
 import './App.css'; 
 

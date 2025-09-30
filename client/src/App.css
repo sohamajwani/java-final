@@ -1,4 +1,4 @@
-/* client/src/App.css (Final Code with Corrected Toast, Search, and Layout) */
+/* client/src/App.css (Final Merged Code) */
 
 /* --- General Reset & Layout --- */
 * {
@@ -145,24 +145,24 @@
 }
 
 .search-input-wrapper {
-    flex-grow: 1; /* CRITICAL: Allows input to take up max space (makes it longer) */
+    flex-grow: 1; 
     display: flex;
     align-items: center;
-    padding: 12px 18px; /* Increased internal padding for height */
+    padding: 12px 18px; 
     border: 1px solid #ddd;
-    border-radius: 30px; /* Bubbly effect for the whole input bar */
+    border-radius: 30px; 
     background-color: #f7f7f7;
     transition: box-shadow 0.2s;
 }
 
 .search-input-wrapper:focus-within {
-    box-shadow: 0 0 0 2px var(--color-primary); /* Highlight on focus */
+    box-shadow: 0 0 0 2px var(--color-primary); 
     border-color: var(--color-primary);
 }
 
 .search-icon {
     margin-right: 10px;
-    color: var(--color-primary); /* Use primary color for sleek look */
+    color: var(--color-primary); 
 }
 
 .search-input {
@@ -175,20 +175,19 @@
 
 .search-actions {
     display: flex;
-    gap: 10px; /* Space between the buttons */
+    gap: 10px; 
     align-items: center;
 }
 
 .action-btn {
-    /* Base style override */
     padding: 10px 20px;
-    border-radius: 25px; /* Makes buttons bubbly/pill-shaped */
+    border-radius: 25px; 
     font-weight: 600;
     transition: transform 0.1s;
 }
 
 .search-btn {
-    background-color: var(--color-primary); /* Deep Purple */
+    background-color: var(--color-primary); 
     color: white;
 }
 
@@ -217,7 +216,7 @@
 
 .genre-btn {
     padding: 8px 15px;
-    border-radius: 20px; /* Pill shape */
+    border-radius: 20px; 
     background-color: #fff; 
     color: var(--color-text); 
     border: 1px solid #ddd;
@@ -228,7 +227,7 @@
 }
 
 .genre-btn.active {
-    background-color: var(--color-primary); /* Deep Purple */
+    background-color: var(--color-primary); 
     color: white;
     border-color: var(--color-primary);
     box-shadow: 0 2px 5px rgba(106, 13, 173, 0.2); 
@@ -506,4 +505,14 @@
 }
 .member-management-view .add-book-btn:hover {
     background-color: #8e44ad;
+}
+
+/* --- Borrow & Return Page Styles --- */
+.borrow-return-view {
+    /* This ensures the content has the visual separation of the other major pages */
+    padding: 20px;
+    background-color: var(--color-sidebar-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-top: 20px;
 }
