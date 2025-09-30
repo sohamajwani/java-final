@@ -1,4 +1,4 @@
-/* client/src/App.css (Extended for LibraryPro Layout) */
+/* client/src/App.css (Final Code with Corrected Toast, Search, and Layout) */
 
 /* --- General Reset & Layout --- */
 * {
@@ -135,48 +135,71 @@
 
 .search-bar-container {
     display: flex;
-    gap: 15px;
+    gap: 15px; /* Spacing between the input wrapper and the buttons */
     align-items: center;
-    background-color: var(--color-sidebar-bg);
+    background-color: #fff;
     padding: 15px 20px;
     border-radius: 12px;
-    margin-bottom: 20px; /* Kept from previous styles */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Kept from previous styles */
+    margin-bottom: 20px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
 }
 
 .search-input-wrapper {
-    flex-grow: 1;
+    flex-grow: 1; /* CRITICAL: Allows input to take up max space (makes it longer) */
     display: flex;
     align-items: center;
-    padding: 10px 15px; /* Padding moved here from input */
+    padding: 12px 18px; /* Increased internal padding for height */
     border: 1px solid #ddd;
-    border-radius: 8px; 
-    background-color: #f7f7f7; 
+    border-radius: 30px; /* Bubbly effect for the whole input bar */
+    background-color: #f7f7f7;
+    transition: box-shadow 0.2s;
+}
+
+.search-input-wrapper:focus-within {
+    box-shadow: 0 0 0 2px var(--color-primary); /* Highlight on focus */
+    border-color: var(--color-primary);
 }
 
 .search-icon {
     margin-right: 10px;
-    color: #999;
-    font-size: 1rem;
+    color: var(--color-primary); /* Use primary color for sleek look */
 }
 
 .search-input {
     border: none;
     outline: none;
-    padding: 0;
+    padding: 0; 
     width: 100%;
     background: transparent;
-    font-size: 1rem;
-}
-
-.search-input:focus {
-    border: none;
 }
 
 .search-actions {
     display: flex;
-    gap: 10px;
+    gap: 10px; /* Space between the buttons */
     align-items: center;
+}
+
+.action-btn {
+    /* Base style override */
+    padding: 10px 20px;
+    border-radius: 25px; /* Makes buttons bubbly/pill-shaped */
+    font-weight: 600;
+    transition: transform 0.1s;
+}
+
+.search-btn {
+    background-color: var(--color-primary); /* Deep Purple */
+    color: white;
+}
+
+.clear-refresh-btn {
+    background-color: #f0f0f0;
+    color: var(--color-text);
+    border: 1px solid #ccc;
+}
+
+.clear-refresh-btn:hover {
+    background-color: #e0e0e0;
 }
 
 /* ================================================= */
@@ -188,8 +211,8 @@
     flex-wrap: wrap;
     gap: 10px;
     padding: 15px 0;
-    border-bottom: 1px solid #eee; /* Kept from previous styles */
-    margin-bottom: 25px; /* Kept from previous styles */
+    border-bottom: 1px solid #eee; 
+    margin-bottom: 25px; 
 }
 
 .genre-btn {
@@ -198,7 +221,7 @@
     background-color: #fff; 
     color: var(--color-text); 
     border: 1px solid #ddd;
-    font-weight: 500; /* Increased weight */
+    font-weight: 500; 
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -208,7 +231,7 @@
     background-color: var(--color-primary); /* Deep Purple */
     color: white;
     border-color: var(--color-primary);
-    box-shadow: 0 2px 5px rgba(106, 13, 173, 0.2); /* Added shadow for pop */
+    box-shadow: 0 2px 5px rgba(106, 13, 173, 0.2); 
 }
 
 .genre-btn:hover:not(.active) {
@@ -361,7 +384,37 @@
     background-color: var(--color-primary);
 }
 
-/* Toast styling remains similar to your last correct version */
+/* --- Toast Notification (FIXED POSITION & STYLING) --- */
+#toast {
+    /* Positioning Fix: Makes the toast stay visible even when scrolling */
+    visibility: hidden;
+    position: fixed; /* CRITICAL FIX: Stays in the viewport */
+    z-index: 1000;
+    left: 50%; /* Center horizontally */
+    bottom: 30px;
+    transform: translateX(-50%); /* Centers element precisely */
+
+    /* Styling */
+    min-width: 250px;
+    background-color: #9b59b6; /* Lavender/Medium Purple */
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 8px; /* Slightly rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    
+    /* Animation */
+    opacity: 0;
+    transition: opacity 0.4s, visibility 0s linear 0.4s;
+}
+
+#toast.show {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.4s;
+}
+
 
 /* --- Member Management Specific Styles --- */
 
@@ -453,76 +506,4 @@
 }
 .member-management-view .add-book-btn:hover {
     background-color: #8e44ad;
-}
-
-/* --- Search Bar Styling (MODIFIED) --- */
-
-.search-bar-container {
-    display: flex;
-    gap: 15px; /* Spacing between the input wrapper and the buttons */
-    align-items: center;
-    background-color: #fff;
-    padding: 15px 20px;
-    border-radius: 12px;
-}
-
-.search-input-wrapper {
-    flex-grow: 1; /* CRITICAL: Allows input to take up max space (makes it longer) */
-    display: flex;
-    align-items: center;
-    padding: 12px 18px; /* Increased internal padding for height */
-    border: 1px solid #ddd;
-    border-radius: 30px; /* Bubbly effect for the whole input bar */
-    background-color: #f7f7f7;
-    transition: box-shadow 0.2s;
-}
-
-.search-input-wrapper:focus-within {
-    box-shadow: 0 0 0 2px var(--color-primary); /* Highlight on focus */
-    border-color: var(--color-primary);
-}
-
-.search-icon {
-    margin-right: 10px;
-    color: var(--color-primary); /* Use primary color for sleek look */
-}
-
-.search-input {
-    /* Keep these styles as they ensure the input takes full space */
-    border: none;
-    outline: none;
-    padding: 0; 
-    width: 100%;
-    background: transparent;
-}
-
-.search-actions {
-    display: flex;
-    gap: 10px; /* Space between the buttons */
-    align-items: center;
-}
-
-/* --- Button Styling (Bubbly/Bigger) --- */
-
-.action-btn {
-    /* Base style override */
-    padding: 10px 20px;
-    border-radius: 25px; /* Makes buttons bubbly/pill-shaped */
-    font-weight: 600;
-    transition: transform 0.1s;
-}
-
-.search-btn {
-    background-color: var(--color-primary); /* Deep Purple */
-    color: white;
-}
-
-.clear-refresh-btn {
-    background-color: #f0f0f0;
-    color: var(--color-text);
-    border: 1px solid #ccc;
-}
-
-.clear-refresh-btn:hover {
-    background-color: #e0e0e0;
 }
