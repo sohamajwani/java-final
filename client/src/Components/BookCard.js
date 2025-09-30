@@ -2,7 +2,14 @@
 
 import React from 'react';
 
-// Added onBorrowReturn prop
+// Helper function to format the MySQL date string (YYYY-MM-DD HH:MM:SS)
+const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    // Cuts off the time (first 10 characters are YYYY-MM-DD)
+    // The date might be a full string or a Date object representation
+    return dateString.toString().slice(0, 10); 
+};
+
 function BookCard({ book, onEdit, onDelete, onBorrowReturn }) { 
     
     // 1. Determine availability status (API returns 1 for available, 0 for borrowed)
@@ -45,10 +52,18 @@ function BookCard({ book, onEdit, onDelete, onBorrowReturn }) {
                     {actionButton} {/* Render the conditional Borrow/Return button */}
                 </div>
                 
+                {/* CRITICAL FIX: Display Loan Status and Due Date */}
                 {!isAvailable && book.borrowed_by && (
-                    <p className="borrow-info">
-                        Borrowed by: <strong>{book.borrowed_by}</strong>
-                    </p>
+                    <div className="borrow-status-info">
+                        <p>Borrowed by: <strong>{book.borrowed_by}</strong></p>
+                        
+                        {/* NEW: Display the formatted due date */}
+                        {book.due_date && (
+                            <p className="due-date">Due: 
+                                <strong> {formatDate(book.due_date)}</strong>
+                            </p>
+                        )}
+                    </div>
                 )}
             </div>
         </div>

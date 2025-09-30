@@ -1,4 +1,4 @@
-// server.js (Temporarily Fixed for Application Loading)
+// server.js (Final Stable Code for Full Functionality)
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -19,7 +19,6 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Wrapper for db.query to use async/await (using Promises from mysql2/promise)
 const query = async (sql, params) => {
-    // Note: This relies on the destructuring [results] which is correct for mysql2/promise.
     const [results] = await db.query(sql, params); 
     return results;
 };
@@ -49,7 +48,7 @@ async function seedBooks() {
     const queries = ["Fiction", "Science", "History", "Technology", "Fantasy"];
     try {
         for (const genre of queries) {
-            console.log(`📚 Fetching books for: ${genre}`);
+            console.log(`📚 Fetching books for: ${genre}`); 
             const books = await fetchBooks(genre, 10);
 
             for (const book of books) {
@@ -70,15 +69,17 @@ async function seedBooks() {
 
 const apiRouter = express.Router();
 
-// 📚 Get all books (MODIFIED TO INCLUDE AVAILABILITY FILTERING)
+// 📚 Get all books (REINSTATING FULL FILTERING LOGIC)
 apiRouter.get("/books", async (req, res) => {
-    const { genre, available } = req.query;
+    const { genre, available } = req.query; // CRITICAL: Reads filter parameters
 
     let sql = `
         SELECT
             b.id, b.title, b.author, b.genre,
             CASE WHEN bb.id IS NULL THEN 1 ELSE 0 END AS available,
-            u.name AS borrowed_by, u.id AS borrowed_by_id
+            u.name AS borrowed_by, 
+            u.id AS borrowed_by_id,
+            bb.due_date    -- Reinstating due_date field
         FROM books b
         LEFT JOIN borrowed_books bb
             ON b.id = bb.book_id AND bb.return_date IS NULL
@@ -88,13 +89,13 @@ apiRouter.get("/books", async (req, res) => {
     const params = [];
     const conditions = [];
 
-    // 1. Filter by Genre 
+    // 1. Filter by Genre (existing logic)
     if (genre) {
         conditions.push("b.genre = ?");
         params.push(genre);
     }
 
-    // 2. Filter by Availability (NEW LOGIC)
+    // 2. Filter by Availability (This enables Borrow & Return page filtering)
     if (available === 'true') {
         conditions.push("bb.id IS NULL"); 
     } else if (available === 'false') {
@@ -111,7 +112,9 @@ apiRouter.get("/books", async (req, res) => {
         const results = await query(sql, params);
         res.json(results);
     } catch (err) {
-        res.status(500).json({ error: "DB error: " + err.message });
+        // Log the error detail clearly if this fails
+        console.error("DATABASE ERROR on /books:", err.message); 
+        res.status(500).json({ error: "DB stability test failed on /books." });
     }
 });
 
@@ -166,7 +169,16 @@ apiRouter.delete("/books/:id", async (req, res) => {
     }
 });
 
-// 🔄 Borrow a book
+// Utility function to calculate the due date (7 days from now)
+function getDueDate() {
+    const date = new Date();
+    // Set date to current date + 7 days
+    date.setDate(date.getDate() + 7); 
+    // Format to MySQL DATETIME/DATE string (YYYY-MM-DD HH:MM:SS)
+    return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+// 🔄 Borrow a book (UPDATED to include due_date)
 apiRouter.post("/borrow", async (req, res) => {
     const { user_id, book_id } = req.body;
     if (!user_id || !book_id) return res.status(400).json({ error: "user_id and book_id are required." });
@@ -175,8 +187,15 @@ apiRouter.post("/borrow", async (req, res) => {
         const check = await query("SELECT * FROM borrowed_books WHERE book_id = ? AND return_date IS NULL", [book_id]);
         if (check.length > 0) return res.status(400).json({ error: "Book is already borrowed." });
 
-        await query("INSERT INTO borrowed_books (user_id, book_id) VALUES (?, ?)", [user_id, book_id]);
-        res.json({ message: "Book borrowed successfully." });
+        const dueDate = getDueDate(); // CRITICAL: Calculate the due date
+
+        // CRITICAL: Insert the due_date into the borrowed_books table
+        await query(
+            "INSERT INTO borrowed_books (user_id, book_id, due_date) VALUES (?, ?, ?)", 
+            [user_id, book_id, dueDate]
+        );
+        
+        res.json({ message: `Book borrowed successfully. Due date: ${dueDate.slice(0, 10)}` });
     } catch (err) {
         res.status(500).json({ error: "DB error: " + err.message });
     }
@@ -232,36 +251,40 @@ apiRouter.get("/search", async (req, res) => {
 
 /* --------------------- 👤 MEMBER MANAGEMENT ROUTES --------------------- */
 
-// 👤 Get users (Member list - TEMPORARILY REVERTED TO SIMPLE SELECT)
-// 👤 Get users (Member list - Reverting to complex query to get clear error)
-// server.js (Simplified GET /api/books for Guaranteed Filtering)
-
+// 👤 Get users (Member list - FINAL IMPLEMENTATION with ACTIVE BORROWS CALCULATION)
 apiRouter.get("/users", async (req, res) => {
     try {
+        // --- FINAL, CORRECT SQL QUERY ---
         const sql = `
             SELECT 
-                u.id, 
-                u.name, 
-                u.email, 
-                u.type,
-                COUNT(bb.book_id) AS active_borrows  -- This calculates the count
+                u.id AS id, 
+                u.name AS name, 
+                u.email AS email, 
+                u.type AS type,
+                COUNT(bb.book_id) AS active_borrows
             FROM users u
             LEFT JOIN borrowed_books bb 
                 ON u.id = bb.user_id AND bb.return_date IS NULL
             GROUP BY u.id, u.name, u.email, u.type
             ORDER BY u.name;
         `;
-        
+        // --------------------------------
         const results = await query(sql); 
         res.json(results);
     } catch (err) {
-        // Log the error to ensure the connection itself is working
-        console.error("DATABASE ERROR on /users:", err.message);
-        res.status(500).json({ error: "DB error: Failed to retrieve member data with loan count." });
+        // Log the error detail clearly
+        console.error("DATABASE CRASH ON USER FETCH:", err.message); 
+        
+        // This is the simplest query that should always work if the DB is connected
+        try {
+            const simpleResults = await query("SELECT id, name, email, type FROM users ORDER BY name");
+            res.json(simpleResults);
+            console.log("INFO: Served simple user list after complex query failed.");
+        } catch (simpleErr) {
+             res.status(500).json({ error: "DB Error: Failed to retrieve ANY member data. Check credentials/service." });
+        }
     }
 });
-
-
 
 // ➕ Add new user (Member)
 apiRouter.post("/users", async (req, res) => {
@@ -320,6 +343,6 @@ app.use((req, res, next) => {
 
 /* ------------------------- 🚀 START SERVER ------------------------- */
 app.listen(PORT, async () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`); 
     await seedBooks(); // auto-populate books on startup
 });

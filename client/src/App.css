@@ -516,3 +516,21 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     margin-top: 20px;
 }
+
+/* --- Loan Status and Due Date Styling --- */
+.borrow-status-info {
+    /* Ensures the due date stands out below the borrower's name */
+    margin-top: 5px; 
+    padding-top: 5px;
+    border-top: 1px dashed #eee;
+    font-size: 0.9rem;
+    color: #444; 
+    text-align: left; /* Align text within the content box */
+    padding-left: 15px; /* Indent slightly for visual appeal */
+}
+
+.borrow-status-info strong {
+    /* Make the date bold and easy to read */
+    font-weight: 700; 
+    color: var(--color-primary); /* Use deep purple accent for the due date */
+}
