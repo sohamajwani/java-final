@@ -1,4 +1,4 @@
-// client/src/Components/BorrowReturn.js (Final Corrected Implementation)
+// client/src/Components/BorrowReturn.js (Final Code with Due Date Modification Logic)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
@@ -45,18 +45,41 @@ function BorrowReturn() {
             showToast(msg, 'error');
         }
     };
+    
+    // --- NEW: Due Date Modification Handler ---
+    const handleModifyDueDate = async (bookId, currentDueDate) => {
+        const newDate = window.prompt(`Enter new return date for Book ID ${bookId} (YYYY-MM-DD):`, currentDueDate);
+        
+        // Check if the user clicked cancel or entered an invalid format
+        // Simple validation checks for null/empty and ensures the length is 10 (like 2025-01-01)
+        if (!newDate || newDate.length !== 10 || newDate.indexOf('-') === -1) {
+            if (newDate) showToast("Modification canceled or invalid date format (Use YYYY-MM-DD).", 'error');
+            return;
+        }
 
-    // --- Modify Props for BookCardList ---
-    // Pass placeholder functions for Edit/Delete and the actual return handler.
+        try {
+            const response = await axios.put(`${API_BASE}/loan/${bookId}`, { new_due_date: newDate });
+            showToast(response.data.message, 'success');
+            fetchBorrowedBooks(); // Refresh list to show new date
+        } catch (error) {
+            showToast(error.response?.data?.error || 'Failed to update due date.', 'error');
+        }
+    };
+    // ------------------------------------------
+
+    // --- Modify Props for BookCardList (FIXED CRASH) ---
     const actionProps = {
+        // Placeholder functions for Edit/Delete on this page
         onEdit: (book) => showToast('Edit is not available on the Active Loans page.', 'info'),
         onDelete: (bookId) => showToast('Deletion is not available on the Active Loans page.', 'info'),
         
+        // Actual handlers for this page
         onBorrowReturn: (action, id) => {
             if (action === 'return') {
                 handleReturn(id);
             }
         },
+        onModifyDueDate: handleModifyDueDate, // <-- NEW PROP ADDED
     };
 
     return (
@@ -70,8 +93,8 @@ function BorrowReturn() {
             ) : (
                 <BookCardList 
                     books={borrowedBooks}
-                    // Pass the specialized action handlers using the spread operator
-                    {...actionProps}
+                    // Pass all action handlers, including the new due date modifier
+                    {...actionProps} 
                 />
             )}
             <Toast message={toast.msg} type={toast.type} />

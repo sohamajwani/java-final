@@ -534,3 +534,29 @@
     font-weight: 700; 
     color: var(--color-primary); /* Use deep purple accent for the due date */
 }
+
+/* client/src/App.css (ADD these styles) */
+
+.due-date-container {
+    display: flex;
+    justify-content: space-between; /* Space out the Due date text and the button */
+    align-items: center;
+    padding-right: 5px; /* Add some space from the edge */
+}
+
+.modify-date-btn {
+    /* Simple, clean icon button style */
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 2px 5px;
+    margin-left: 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.modify-date-btn:hover {
+    background-color: #f0e8ff;
+}

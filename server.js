@@ -1,4 +1,4 @@
-// server.js (Final Stable Code for Full Functionality)
+// server.js (Finalized Code with Due Date Modification Route)
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -95,7 +95,7 @@ apiRouter.get("/books", async (req, res) => {
         params.push(genre);
     }
 
-    // 2. Filter by Availability (This enables Borrow & Return page filtering)
+    // 2. Filter by Availability (NEW LOGIC)
     if (available === 'true') {
         conditions.push("bb.id IS NULL"); 
     } else if (available === 'false') {
@@ -112,7 +112,6 @@ apiRouter.get("/books", async (req, res) => {
         const results = await query(sql, params);
         res.json(results);
     } catch (err) {
-        // Log the error detail clearly if this fails
         console.error("DATABASE ERROR on /books:", err.message); 
         res.status(500).json({ error: "DB stability test failed on /books." });
     }
@@ -200,6 +199,28 @@ apiRouter.post("/borrow", async (req, res) => {
         res.status(500).json({ error: "DB error: " + err.message });
     }
 });
+
+// 📅 Update Loan Due Date (NEW ROUTE)
+apiRouter.put("/loan/:book_id", async (req, res) => {
+    const { book_id } = req.params;
+    const { new_due_date } = req.body; // Expecting date string like "YYYY-MM-DD"
+
+    if (!new_due_date) return res.status(400).json({ error: "New due date is required." });
+
+    try {
+        // Update the due_date only for the active loan record (return_date IS NULL)
+        const sql = "UPDATE borrowed_books SET due_date = ? WHERE book_id = ? AND return_date IS NULL";
+        const result = await query(sql, [new_due_date, book_id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Active loan record not found for this book." });
+        }
+        res.json({ message: `Due date successfully updated to ${new_due_date}.` });
+    } catch (err) {
+        res.status(500).json({ error: "DB error: " + err.message });
+    }
+});
+
 
 // ✅ Return a book
 apiRouter.post("/return", async (req, res) => {

@@ -1,4 +1,4 @@
-// client/src/Components/BookCard.js
+// client/src/Components/BookCard.js (FINAL CODE with Due Date Modification Button)
 
 import React from 'react';
 
@@ -6,11 +6,11 @@ import React from 'react';
 const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     // Cuts off the time (first 10 characters are YYYY-MM-DD)
-    // The date might be a full string or a Date object representation
     return dateString.toString().slice(0, 10); 
 };
 
-function BookCard({ book, onEdit, onDelete, onBorrowReturn }) { 
+// MODIFIED: Added onModifyDueDate to props
+function BookCard({ book, onEdit, onDelete, onBorrowReturn, onModifyDueDate }) { 
     
     // 1. Determine availability status (API returns 1 for available, 0 for borrowed)
     const isAvailable = book.available === 1; 
@@ -57,11 +57,22 @@ function BookCard({ book, onEdit, onDelete, onBorrowReturn }) {
                     <div className="borrow-status-info">
                         <p>Borrowed by: <strong>{book.borrowed_by}</strong></p>
                         
-                        {/* NEW: Display the formatted due date */}
                         {book.due_date && (
-                            <p className="due-date">Due: 
-                                <strong> {formatDate(book.due_date)}</strong>
-                            </p>
+                            // NEW STRUCTURE: Wrap date and button in a div
+                            <div className="due-date-container">
+                                <p className="due-date">Due: 
+                                    <strong> {formatDate(book.due_date)}</strong>
+                                </p>
+                                
+                                {/* NEW: Modification Button */}
+                                <button 
+                                    className="modify-date-btn"
+                                    // Call the new handler prop, passing book ID and current date
+                                    onClick={() => onModifyDueDate(book.id, formatDate(book.due_date))}
+                                >
+                                    ✏️
+                                </button>
+                            </div>
                         )}
                     </div>
                 )}
