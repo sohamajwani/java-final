@@ -71,7 +71,7 @@ const apiRouter = express.Router();
 
 // 📚 Get all books (FINAL, CORRECT IMPLEMENTATION with FILTERS AND DUE_DATE)
 apiRouter.get("/books", async (req, res) => {
-    const { genre, available } = req.query; // CRITICAL: Reads filter parameters
+    const { genre, available } = req.query; 
 
     let sql = `
         SELECT
@@ -79,7 +79,9 @@ apiRouter.get("/books", async (req, res) => {
             CASE WHEN bb.id IS NULL THEN 1 ELSE 0 END AS available,
             u.name AS borrowed_by, 
             u.id AS borrowed_by_id,
-            bb.due_date    -- Includes due_date field
+            bb.due_date,
+            -- NEW CRITICAL FIELD: Check if due_date is in the past
+            CASE WHEN bb.due_date IS NOT NULL AND bb.due_date < NOW() THEN 1 ELSE 0 END AS overdue
         FROM books b
         LEFT JOIN borrowed_books bb
             ON b.id = bb.book_id AND bb.return_date IS NULL
@@ -275,7 +277,7 @@ apiRouter.get("/search", async (req, res) => {
 // 👤 Get users (Member list - FINAL IMPLEMENTATION with ACTIVE BORROWS CALCULATION)
 apiRouter.get("/users", async (req, res) => {
     try {
-        // --- FINAL, CORRECT SQL QUERY ---
+        // --- FINAL, ROBUST SQL QUERY ---
         const sql = `
             SELECT 
                 u.id AS id, 
@@ -285,7 +287,7 @@ apiRouter.get("/users", async (req, res) => {
                 COUNT(bb.book_id) AS active_borrows
             FROM users u
             LEFT JOIN borrowed_books bb 
-                ON u.id = bb.user_user_id AND bb.return_date IS NULL
+                ON u.id = bb.user_id AND bb.return_date IS NULL
             GROUP BY u.id, u.name, u.email, u.type
             ORDER BY u.name;
         `;
@@ -293,16 +295,18 @@ apiRouter.get("/users", async (req, res) => {
         const results = await query(sql); 
         res.json(results);
     } catch (err) {
-        // Log the error detail clearly
-        console.error("DATABASE CRASH ON USER FETCH:", err.message); 
+        // If the complex query fails (CRASH PREVENTION LOGIC):
+        console.error("DATABASE CRASH ON COMPLEX USER FETCH:", err.message); 
         
-        // This is the simplest query that should always work if the DB is connected
+        // Attempt to serve the simplest, non-crashing data as a fallback:
         try {
             const simpleResults = await query("SELECT id, name, email, type FROM users ORDER BY name");
-            res.json(simpleResults);
-            console.log("INFO: Served simple user list after complex query failed.");
+            res.json(simpleResults.map(u => ({ 
+                ...u, 
+                active_borrows: 0 // Provide 0 count when complex query fails
+            })));
         } catch (simpleErr) {
-             res.status(500).json({ error: "DB Error: Failed to retrieve ANY member data. Check credentials/service." });
+             res.status(500).json({ error: "DB Error: Cannot retrieve any member data. Check credentials." });
         }
     }
 });

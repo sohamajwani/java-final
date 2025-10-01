@@ -1,4 +1,4 @@
-// client/src/Components/BookCard.js (FINAL CODE with Due Date Modification Button)
+// client/src/Components/BookCard.js (FINALIZED CODE with Overdue Status)
 
 import React from 'react';
 
@@ -12,8 +12,14 @@ const formatDate = (dateString) => {
 // MODIFIED: Added onModifyDueDate to props
 function BookCard({ book, onEdit, onDelete, onBorrowReturn, onModifyDueDate }) { 
     
-    // 1. Determine availability status (API returns 1 for available, 0 for borrowed)
+    // 1. Determine availability status
     const isAvailable = book.available === 1; 
+    
+    // NEW CRITICAL CHECK: Determine if the book is overdue (1 = overdue, 0 = active loan)
+    const isOverdue = book.overdue === 1; 
+
+    // Define the card's class name, applying the 'overdue' class if necessary
+    const cardClass = `book-card ${isOverdue ? 'overdue' : ''}`; // <--- APPLIES FLASHING CSS
     
     // 2. Define the action button based on availability
     const actionButton = isAvailable ? (
@@ -32,7 +38,7 @@ function BookCard({ book, onEdit, onDelete, onBorrowReturn, onModifyDueDate }) {
         : 'linear-gradient(135deg, #ffb3b3, #cc0000)'; // Red/Pink for borrowed
 
     return (
-        <div className="book-card">
+        <div className={cardClass}> {/* Use the conditional class here */}
             <div className="card-top-bar" style={{ background: colorStyle }}>
                  {/* Icons for Edit/Delete */}
                  <div className="card-icons">
@@ -52,22 +58,25 @@ function BookCard({ book, onEdit, onDelete, onBorrowReturn, onModifyDueDate }) {
                     {actionButton} {/* Render the conditional Borrow/Return button */}
                 </div>
                 
-                {/* CRITICAL FIX: Display Loan Status and Due Date */}
+                {/* Display Loan Status and Due Date ONLY if NOT available */}
                 {!isAvailable && book.borrowed_by && (
                     <div className="borrow-status-info">
+                        
+                        {/* Display "OVERDUE" message if applicable */}
+                        {isOverdue && <p style={{ color: '#e74c3c', fontWeight: 'bold' }}>OVERDUE!</p>}
+                        
                         <p>Borrowed by: <strong>{book.borrowed_by}</strong></p>
                         
                         {book.due_date && (
-                            // NEW STRUCTURE: Wrap date and button in a div
                             <div className="due-date-container">
                                 <p className="due-date">Due: 
-                                    <strong> {formatDate(book.due_date)}</strong>
+                                    {/* Highlight the due date in red if overdue */}
+                                    <strong style={{ color: isOverdue ? '#e74c3c' : 'var(--color-primary)' }}> {formatDate(book.due_date)}</strong>
                                 </p>
                                 
-                                {/* NEW: Modification Button */}
+                                {/* Modification Button */}
                                 <button 
                                     className="modify-date-btn"
-                                    // Call the new handler prop, passing book ID and current date
                                     onClick={() => onModifyDueDate(book.id, formatDate(book.due_date))}
                                 >
                                     ✏️

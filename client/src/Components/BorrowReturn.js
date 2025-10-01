@@ -1,4 +1,4 @@
-// client/src/Components/BorrowReturn.js (Final Code with Due Date Modification Logic)
+// client/src/Components/BorrowReturn.js (Final Code with Overdue/Active Split)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
@@ -46,7 +46,7 @@ function BorrowReturn() {
         }
     };
     
-    // --- NEW: Due Date Modification Handler ---
+    // --- NEW: Due Date Modification Handler (With Past Date Validation) ---
     const handleModifyDueDate = async (bookId, currentDueDate) => {
         const newDateString = window.prompt(`Enter new return date for Book ID ${bookId} (YYYY-MM-DD):`, currentDueDate);
         
@@ -57,30 +57,21 @@ function BorrowReturn() {
         }
 
         // --- 2. CRITICAL DATE VALIDATION ---
-        
-        // Get today's date (at midnight, for comparison)
         const today = new Date();
         today.setHours(0, 0, 0, 0); 
-
-        // Create a Date object from the user's input (YYYY-MM-DD)
         const parts = newDateString.split('-');
-        // Note: Month is 0-indexed in JS Date (0=Jan, 11=Dec). We don't use 'new Date(dateString)'
-        // to avoid automatic time zone shifting.
         const submittedDate = new Date(parts[0], parts[1] - 1, parts[2]); 
 
-        // Check if the submitted date is strictly earlier than today (the past)
         if (submittedDate < today) {
             showToast("Error: Due date cannot be set to a date in the past.", 'error');
             return;
         }
         
-        // --- End Validation ---
-
         // 3. Format Date for API (Ensures the YYYY-MM-DD format is clean)
         const yyyy = submittedDate.getFullYear();
         const mm = String(submittedDate.getMonth() + 1).padStart(2, '0');
         const dd = String(submittedDate.getDate()).padStart(2, '0');
-        const newDate = `${yyyy}-${mm}-${dd}`; // The clean date string for the API
+        const newDate = `${yyyy}-${mm}-${dd}`; 
 
         try {
             const response = await axios.put(`${API_BASE}/loan/${bookId}`, { new_due_date: newDate });
@@ -92,7 +83,12 @@ function BorrowReturn() {
     };
     // ------------------------------------------
 
-    // --- Modify Props for BookCardList (FIXED CRASH) ---
+    // --- Data is fetched into borrowedBooks array (all borrowed items) ---
+    // 1. Filter borrowedBooks into two lists based on the 'overdue' flag from the API
+    const overdueBooks = borrowedBooks.filter(book => book.overdue === 1);
+    const activeBooks = borrowedBooks.filter(book => book.overdue === 0);
+    
+    // 2. Define action props (needed by BookCardList and BookCard)
     const actionProps = {
         // Placeholder functions for Edit/Delete on this page
         onEdit: (book) => showToast('Edit is not available on the Active Loans page.', 'info'),
@@ -109,19 +105,36 @@ function BorrowReturn() {
 
     return (
         <div className="borrow-return-view">
-            <h1 className="catalogue-title">🔄 Active Loans</h1>
-            <p className="catalogue-subtitle">Items currently checked out and due for return.</p>
-
-            {/* CRITICAL: Check if the list is an array before mapping (extra safety) */}
-            {(!Array.isArray(borrowedBooks) || borrowedBooks.length === 0) ? (
-                <p>No books are currently borrowed.</p>
-            ) : (
-                <BookCardList 
-                    books={borrowedBooks}
-                    // Pass all action handlers, including the new due date modifier
-                    {...actionProps} 
-                />
+            
+            {/* 1. OVERDUE SECTION (New) */}
+            {overdueBooks.length > 0 && (
+                <section className="overdue-section">
+                    <h1 className="catalogue-title overdue-title">🚨 Overdue Items ({overdueBooks.length})</h1>
+                    <p className="catalogue-subtitle">These items must be returned immediately.</p>
+                    <BookCardList 
+                        books={overdueBooks}
+                        {...actionProps}
+                    />
+                </section>
             )}
+
+            {/* 2. ACTIVE LOANS SECTION */}
+            {/* Adjust margin only if Overdue section is hidden */}
+            <section className="active-loans-section" style={{ marginTop: overdueBooks.length > 0 ? '40px' : '0' }}>
+                <h1 className="catalogue-title">🔄 Active Loans ({activeBooks.length})</h1>
+                <p className="catalogue-subtitle">Items currently checked out and due for return.</p>
+                
+                {/* Show no books message ONLY if both lists are empty */}
+                {activeBooks.length === 0 && overdueBooks.length === 0 ? (
+                    <p>No books are currently checked out.</p>
+                ) : (
+                    <BookCardList 
+                        books={activeBooks}
+                        {...actionProps}
+                    />
+                )}
+            </section>
+            
             <Toast message={toast.msg} type={toast.type} />
         </div>
     );
