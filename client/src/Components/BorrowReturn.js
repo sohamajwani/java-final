@@ -48,19 +48,44 @@ function BorrowReturn() {
     
     // --- NEW: Due Date Modification Handler ---
     const handleModifyDueDate = async (bookId, currentDueDate) => {
-        const newDate = window.prompt(`Enter new return date for Book ID ${bookId} (YYYY-MM-DD):`, currentDueDate);
+        const newDateString = window.prompt(`Enter new return date for Book ID ${bookId} (YYYY-MM-DD):`, currentDueDate);
         
-        // Check if the user clicked cancel or entered an invalid format
-        // Simple validation checks for null/empty and ensures the length is 10 (like 2025-01-01)
-        if (!newDate || newDate.length !== 10 || newDate.indexOf('-') === -1) {
-            if (newDate) showToast("Modification canceled or invalid date format (Use YYYY-MM-DD).", 'error');
+        // 1. Basic Format and Cancel Check
+        if (!newDateString || newDateString.length !== 10 || newDateString.indexOf('-') === -1) {
+            if (newDateString) showToast("Modification canceled or invalid date format (Use YYYY-MM-DD).", 'error');
             return;
         }
+
+        // --- 2. CRITICAL DATE VALIDATION ---
+        
+        // Get today's date (at midnight, for comparison)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); 
+
+        // Create a Date object from the user's input (YYYY-MM-DD)
+        const parts = newDateString.split('-');
+        // Note: Month is 0-indexed in JS Date (0=Jan, 11=Dec). We don't use 'new Date(dateString)'
+        // to avoid automatic time zone shifting.
+        const submittedDate = new Date(parts[0], parts[1] - 1, parts[2]); 
+
+        // Check if the submitted date is strictly earlier than today (the past)
+        if (submittedDate < today) {
+            showToast("Error: Due date cannot be set to a date in the past.", 'error');
+            return;
+        }
+        
+        // --- End Validation ---
+
+        // 3. Format Date for API (Ensures the YYYY-MM-DD format is clean)
+        const yyyy = submittedDate.getFullYear();
+        const mm = String(submittedDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(submittedDate.getDate()).padStart(2, '0');
+        const newDate = `${yyyy}-${mm}-${dd}`; // The clean date string for the API
 
         try {
             const response = await axios.put(`${API_BASE}/loan/${bookId}`, { new_due_date: newDate });
             showToast(response.data.message, 'success');
-            fetchBorrowedBooks(); // Refresh list to show new date
+            fetchBorrowedBooks(); 
         } catch (error) {
             showToast(error.response?.data?.error || 'Failed to update due date.', 'error');
         }

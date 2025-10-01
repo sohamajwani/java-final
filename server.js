@@ -1,4 +1,4 @@
-// server.js (Finalized Code with Due Date Modification Route)
+// server.js (FINAL CORRECT CODE - Restoring All Filters and Stable User Query)
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -69,7 +69,7 @@ async function seedBooks() {
 
 const apiRouter = express.Router();
 
-// 📚 Get all books (REINSTATING FULL FILTERING LOGIC)
+// 📚 Get all books (FINAL, CORRECT IMPLEMENTATION with FILTERS AND DUE_DATE)
 apiRouter.get("/books", async (req, res) => {
     const { genre, available } = req.query; // CRITICAL: Reads filter parameters
 
@@ -79,7 +79,7 @@ apiRouter.get("/books", async (req, res) => {
             CASE WHEN bb.id IS NULL THEN 1 ELSE 0 END AS available,
             u.name AS borrowed_by, 
             u.id AS borrowed_by_id,
-            bb.due_date    -- Reinstating due_date field
+            bb.due_date    -- Includes due_date field
         FROM books b
         LEFT JOIN borrowed_books bb
             ON b.id = bb.book_id AND bb.return_date IS NULL
@@ -89,17 +89,17 @@ apiRouter.get("/books", async (req, res) => {
     const params = [];
     const conditions = [];
 
-    // 1. Filter by Genre (existing logic)
+    // 1. Filter by Genre 
     if (genre) {
         conditions.push("b.genre = ?");
         params.push(genre);
     }
 
-    // 2. Filter by Availability (NEW LOGIC)
+    // 2. Filter by Availability (THIS IS WHAT FIXES THE BORROW & RETURN PAGE)
     if (available === 'true') {
-        conditions.push("bb.id IS NULL"); 
+        conditions.push("bb.id IS NULL"); // Only show available books
     } else if (available === 'false') {
-        conditions.push("bb.id IS NOT NULL");
+        conditions.push("bb.id IS NOT NULL"); // Only show borrowed books
     }
 
     if (conditions.length > 0) {
@@ -285,7 +285,7 @@ apiRouter.get("/users", async (req, res) => {
                 COUNT(bb.book_id) AS active_borrows
             FROM users u
             LEFT JOIN borrowed_books bb 
-                ON u.id = bb.user_id AND bb.return_date IS NULL
+                ON u.id = bb.user_user_id AND bb.return_date IS NULL
             GROUP BY u.id, u.name, u.email, u.type
             ORDER BY u.name;
         `;
