@@ -99,7 +99,65 @@
     gap: 1.5rem; 
 }
 
-/* User Profile */
+/* New wrapper for the profile photo/details/logout group */
+.user-profile-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Spacing between name block and icon */
+    padding: 8px 12px;
+    border-radius: 25px;
+    background-color: #f0e8ff; /* Lightest lavender background */
+    transition: background-color 0.2s;
+}
+
+.user-profile-wrapper:hover {
+    background-color: #e6d4ff; /* Slight color change on hover */
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column; /* Stacks name over title */
+    align-items: flex-end; /* Aligns text right (Name/Title stack) */
+}
+
+.user-name {
+    font-size: 1rem;
+    font-weight: 700; /* Bold the main name */
+    color: var(--color-text);
+    line-height: 1.2;
+}
+
+.user-title { 
+    color: var(--color-primary); /* Deep Purple */
+    font-weight: 500;
+    font-size: 0.85rem;
+    line-height: 1.2;
+}
+
+.profile-icon {
+    /* Styles for the lucide-react user icon (User) */
+    color: var(--color-primary);
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.logout-btn {
+    /* Styling for the logout button container */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #dcd0ff; /* Light purple hover ring */
+}
+
+
+/* User Profile 
 .user-profile {
     display: flex;
     align-items: center;
@@ -112,7 +170,7 @@
     line-height: 1.2;
 }
 .user-title { color: var(--color-primary); font-weight: bold; }
-.user-avatar { width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; }
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; }*/
 
 
 /* ================================================= */
@@ -123,7 +181,26 @@
 .notification-container {
     position: relative;
     display: inline-block;
+    padding:0;
+    background: none;
 }
+
+/* NEW: Style the Bell Button itself to look like a clean box */
+.notification-bell-button {
+    background-color: #f0e8ff; /* Light lavender box */
+    border: 1px solid #dcd0ff;
+    border-radius: 8px; /* Rounded corners for the button */
+    padding: 8px 12px;
+    cursor: pointer;
+    line-height: 1; /* Aligns the icon nicely */
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.notification-bell-button:hover {
+    background-color: #e6d4ff;
+    box-shadow: 0 0 0 1px var(--color-primary);
+}
+
 
 .notification-badge {
   position: absolute;

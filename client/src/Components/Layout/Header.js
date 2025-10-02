@@ -1,22 +1,15 @@
-// client/src/Components/Layout/Header.js (Final Corrected Code)
+// client/src/Components/Layout/Header.js (FINAL CODE with Clean Profile Layout)
 
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Bell, LogOut, User } from "lucide-react"; // npm install lucide-react
 
-// Helper function to format the MySQL date string to prevent time zone shift errors
-const formatDateForDisplay = (dateString) => {
+// --- Removed complex formatDateForDisplay function ---
+// Helper function to format the date directly by slicing the string (avoids time zone shift crash)
+const simpleFormatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    
-    // We expect YYYY-MM-DD format from the server's due_date field
-    const parts = dateString.toString().slice(0, 10).split('-');
-    
-    // Use Date(year, monthIndex, day) to force local interpretation (preventing UTC shift)
-    // Note: monthIndex is 0-indexed, so we subtract 1 from the month part
-    const localDate = new Date(parts[0], parts[1] - 1, parts[2]); 
-    
-    // Format locally for display (e.g., 10/2/2025)
-    return localDate.toLocaleDateString();
+    // Slices the YYYY-MM-DD part from the MySQL date string
+    return dateString.toString().slice(0, 10); 
 };
 
 
@@ -76,10 +69,11 @@ function Header() {
       </div>
 
       <div className="user-info">
-        {/* 🔔 Notification Icon */}
+        {/* 🔔 Notification Icon - FIXED VISUAL LAYOUT */}
         <div className="notification-container" ref={notificationRef}>
           <button
-            className="notification-icon clickable"
+            // CRITICAL FIX 1: Added new class for styling the bell button container
+            className="notification-icon clickable notification-bell-button"
             onClick={toggleDropdown}
             aria-expanded={isDropdownOpen}
             aria-controls="notification-panel"
@@ -116,9 +110,10 @@ function Header() {
                         {/* Book Title (Bold and separate line via CSS) */}
                         <b>{String(n.title)}</b>
                         
-                        {/* Due Date (uses new formatting helper) */}
+                        {/* Due Date (USING SIMPLE STRING SLICE FIX) */}
                         <span className="due-date-text">
-                          Due: {formatDateForDisplay(n.due_date)}
+                            {/* FIX: Use simple string slice to avoid date object crash */}
+                            Due: {simpleFormatDate(n.due_date)}
                         </span>
                       </div>
                     </div>
@@ -133,14 +128,19 @@ function Header() {
           )}
         </div>
 
-        {/* 👤 User Profile + Logout */}
-        <div className="user-profile">
-          <User className="profile-icon" size={28} color="#f39c12" />
-          <span className="user-name">Sarah Johnson</span>
-          <span className="user-title">Head Librarian</span>
-          <button className="logout-btn">
-            <LogOut size={20} color="#f39c12" />
-          </button>
+        {/* 👤 User Profile + Logout - NEW WRAPPER FOR CLEAN ALIGNMENT */}
+        <div className="user-profile-wrapper"> 
+            <div className="profile-details">
+                {/* CRITICAL FIX 2: Changed name to SoJaBoo */}
+                <span className="user-name">SoJaBoo</span> 
+                <span className="user-title">Head Librarian</span>
+            </div>
+          
+            <User className="profile-icon" size={28} color="var(--color-primary)" />
+            
+            <button className="logout-btn">
+                <LogOut size={20} color="var(--color-primary)" />
+            </button>
         </div>
       </div>
     </header>
