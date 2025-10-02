@@ -213,7 +213,7 @@
 
 /* Content Area - Scrollable */
 .panel-content {
-    padding: 0.5rem 0;
+    padding: 0;
     flex-grow: 1;
     overflow-y: auto; 
 }
@@ -247,11 +247,13 @@
 
 /* Individual Notification Item Styling (Placeholder) */
 .notification-item {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px dotted #f0f0f0;
-    font-size: 0.95rem;
+    /* Use Flexbox for cleaner alignment */
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Align item contents to the top */
+    padding: 10px 15px; /* Add padding here for better spacing */
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    line-height: 1.4; /* Improve readability */
 }
 
 .notification-item:last-child {
@@ -262,13 +264,37 @@
     height: 10px;
     width: 10px;
     border-radius: 50%;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Ensures the dot doesn't shrink when text is long */
+    margin-top: 5px; /* Aligns dot with the start of the text */
     margin-right: 10px;
 }
 
 .dot.overdue { background-color: #dc3545; } 
 .dot.pending { background-color: #ffc107; } 
 .dot.info { background-color: #17a2b8; } 
+
+/* New: Container for the Text Content */
+.notification-text-wrapper {
+    flex-grow: 1;
+}
+
+/* New: Styling for the Book Title */
+.notification-text-wrapper b {
+    display: block; /* Forces the title onto its own line */
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text); /* Ensure the title is dark purple */
+    margin-bottom: 2px;
+}
+
+/* New: Styling for the Due Date */
+.notification-text-wrapper .due-date-text {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 3px;
+}
+
 
 /* ================================================= */
 /* === CATALOGUE/MEMBER SPECIFIC STYLES (Existing) === */
@@ -723,4 +749,52 @@
     100% {
         box-shadow: 0 0 20px #e74c3c, 0 0 5px rgba(231, 76, 60, 0.8), 0 4px 15px rgba(0, 0, 0, 0.05);
     }
+}
+
+/* --- User Select Dropdown Styling (MODIFIED FOR LEFT ALIGNMENT & COLOR) --- */
+
+.user-select-section {
+    padding: 15px 20px; /* Reduced vertical padding */
+    background-color: var(--color-sidebar-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    text-align: left; /* FIX: Left-aligns content */
+}
+
+.select-user-title {
+    color: var(--color-text);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.user-dropdown {
+    /* Style the actual select element to be a rounded, unified block */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    
+    width: 100%; /* Take full width of the container */
+    max-width: 250px; /* Limits the max size of the dropdown */
+    padding: 10px 15px; /* Padding for height/bubbly look */
+    
+    /* Cohesive Coloring */
+    background-color: #f0e8ff; /* Light lavender background */
+    color: var(--color-text);
+    border: 1px solid #dcd0ff; /* Pale purple border */
+    border-radius: 25px; /* Pill/bubbly shape */
+    
+    font-size: 1rem;
+    cursor: pointer;
+    outline: none;
+    transition: box-shadow 0.2s;
+}
+
+.user-dropdown:hover {
+    border-color: var(--color-primary);
+}
+
+.user-dropdown:focus {
+    box-shadow: 0 0 0 2px #dcd0ff; /* Pale purple shadow on focus */
 }

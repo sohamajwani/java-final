@@ -69,7 +69,7 @@ async function seedBooks() {
 
 const apiRouter = express.Router();
 
-// 📚 Get all books (FINAL, CORRECT IMPLEMENTATION with FILTERS AND DUE_DATE)
+// 📚 Get all books (FINAL, STABLE IMPLEMENTATION with ALL FILTERS/DATA)
 apiRouter.get("/books", async (req, res) => {
     const { genre, available } = req.query; // CRITICAL: Reads filter parameters
 
@@ -98,9 +98,9 @@ apiRouter.get("/books", async (req, res) => {
 
     // 2. Filter by Availability 
     if (available === 'true') {
-        conditions.push("bb.id IS NULL"); 
+        conditions.push("bb.id IS NULL"); // Only show available books
     } else if (available === 'false') {
-        conditions.push("bb.id IS NOT NULL");
+        conditions.push("bb.id IS NOT NULL"); // Only show borrowed books
     }
 
     if (conditions.length > 0) {
@@ -113,6 +113,7 @@ apiRouter.get("/books", async (req, res) => {
         const results = await query(sql, params);
         res.json(results);
     } catch (err) {
+        // Log the error clearly and send error message
         console.error("DATABASE ERROR on /books:", err.message); 
         res.status(500).json({ error: "DB stability test failed on /books." });
     }
@@ -271,7 +272,9 @@ apiRouter.get("/search", async (req, res) => {
     }
 });
 
-// 🚨 NEW ROUTE: Get Overdue Notifications
+/* --------------------- 👤 NOTIFICATION ROUTE --------------------- */
+
+// 🚨 NEW ROUTE: Get Overdue Notifications (RESTORED)
 apiRouter.get("/notifications/overdue", async (req, res) => {
     try {
         const sql = `
@@ -283,13 +286,18 @@ apiRouter.get("/notifications/overdue", async (req, res) => {
             JOIN books b ON bb.book_id = b.id
             JOIN users u ON bb.user_id = u.id
             WHERE bb.return_date IS NULL 
-            AND bb.due_date < CURDATE()
+            
+            -- CRITICAL FIX: Use CURDATE() for stability, ensuring only past days count as overdue
+            AND bb.due_date < CURDATE() 
+            
             ORDER BY bb.due_date ASC
         `;
         const overdueBooks = await query(sql);
         res.json(overdueBooks);
     } catch (err) {
-        // Return an empty array on the front-end so the Header doesn't crash
+        // Log the error detail clearly
+        console.error("DATABASE ERROR on /notifications/overdue:", err.message); 
+        // Return an empty array on the front-end to prevent client-side crash
         res.json([]); 
     }
 });
