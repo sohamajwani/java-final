@@ -1054,3 +1054,38 @@
     color: var(--color-primary); 
     border-bottom: 2px solid #eee;
 }
+
+/* --- Borrow/Return Buttons (Specific to BookCard.js) --- */
+
+.btn-borrow, .btn-return {
+    /* Base style override */
+    padding: 10px 15px;
+    border: none;
+    border-radius: 20px; /* Pill/bubbly shape */
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    font-size: 0.95rem; /* Slightly larger text */
+}
+
+.btn-borrow {
+    /* Style for Borrow Button (Primary Purple) */
+    background-color: var(--color-primary); 
+    color: white;
+}
+
+.btn-borrow:hover {
+    background-color: #4b0082; /* Darker purple on hover */
+    box-shadow: 0 4px 8px rgba(106, 13, 173, 0.3);
+}
+
+.btn-return {
+    /* Style for Return Button (Warning Color - Coral/Orange) */
+    background-color: var(--color-secondary); 
+    color: white;
+}
+
+.btn-return:hover {
+    background-color: #ff6347; /* Darker coral on hover */
+    box-shadow: 0 4px 8px rgba(255, 127, 80, 0.3);
+}

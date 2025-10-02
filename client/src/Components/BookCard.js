@@ -1,4 +1,4 @@
-// client/src/Components/BookCard.js (FINALIZED CODE with Overdue Status)
+// client/src/Components/BookCard.js (FINALIZED CODE with Bubbly Buttons and Overdue Status)
 
 import React from 'react';
 
@@ -23,10 +23,12 @@ function BookCard({ book, onEdit, onDelete, onBorrowReturn, onModifyDueDate }) {
     
     // 2. Define the action button based on availability
     const actionButton = isAvailable ? (
+        // --- STYLED BORROW BUTTON ---
         <button className="btn-borrow" onClick={() => onBorrowReturn('borrow', book.id)}>
             Borrow
         </button>
     ) : (
+        // --- STYLED RETURN BUTTON ---
         <button className="btn-return" onClick={() => onBorrowReturn('return', book.id)}>
             Return
         </button>
