@@ -593,6 +593,13 @@
     background-color: #ff6347;
 }
 
+.modal-title {
+    color: var(--color-primary); /* Use deep purple for the title */
+    margin-bottom: 20px;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -615,18 +622,67 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
-.modal-content input, .modal-content select {
+.modal-content input, 
+.modal-content select {
+    /* Base style for all inputs and selects inside the modal */
+    
+    /* Remove old max-width rule to allow input-group to take over */
+    width: 100%; 
+    max-width: 400px; /* NEW: Set a maximum width for the input group for aesthetics */
+    
+    /* CRITICAL AESTHETIC FIX: Apply bubbly/modern style */
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 20px; /* Pill shape */
+    padding: 12px 15px; /* Increased padding */
+    margin-bottom: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+    border-color: var(--color-primary);
+}
+
+.modal-content .input-group {
     width: 100%;
-    max-width: 100%;
+    /* CRITICAL: Ensure input group max width is set here to fill modal space */
+    max-width: 400px; 
     margin-bottom: 15px;
 }
 
+
 .modal-actions {
+    width:100%;
+    max-width: 400px; 
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 15px;
     margin-top: 20px;
 }
+
+.modal-actions .action-btn {
+    /* Inherit the bubbly action button style */
+    padding: 10px 20px;
+    border-radius: 25px; 
+    font-weight: 600;
+}
+
+/* Ensure secondary action button (Cancel) uses the same clean style */
+.modal-actions .btn-cancel {
+    background-color: #e0e0e0;
+    color: var(--color-text);
+}
+.modal-actions .btn-cancel:hover {
+    background-color: #ccc;
+}
+
+.modal-actions .btn-primary {
+    background-color: var(--color-primary); 
+    color: white; /* Ensure this is also white */
+}
+
 
 .btn-cancel {
     background-color: #ccc;
@@ -634,6 +690,7 @@
 }
 .btn-primary {
     background-color: var(--color-primary);
+    color: white !important; 
 }
 
 /* --- Toast Notification (FIXED POSITION & STYLING) --- */
