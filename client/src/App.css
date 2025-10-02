@@ -946,11 +946,6 @@
     color: #4b77be;
 }
 
-/* Quick Actions Styling */
-.quick-actions {
-    /* Styling section title applied above */
-}
-
 .action-button-group {
     display: flex;
     flex-direction: column;
