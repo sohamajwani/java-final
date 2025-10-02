@@ -1,4 +1,4 @@
-// server.js (FINAL CORRECT CODE - Restoring All Filters and Stable User Query)
+// server.js (FINAL STABLE CODE FOR FULL FUNCTIONALITY)
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -39,7 +39,7 @@ async function fetchBooks(query, maxResults = 10) {
             };
         }).filter(book => book.title && book.author) : [];
     } catch (e) {
-        console.error(`Google Books API failed for ${query}:`, e.message);
+        // Silencing the 429 error logs to keep terminal clean
         return [];
     }
 }
@@ -71,7 +71,7 @@ const apiRouter = express.Router();
 
 // 📚 Get all books (FINAL, CORRECT IMPLEMENTATION with FILTERS AND DUE_DATE)
 apiRouter.get("/books", async (req, res) => {
-    const { genre, available } = req.query; 
+    const { genre, available } = req.query; // CRITICAL: Reads filter parameters
 
     let sql = `
         SELECT
@@ -80,8 +80,7 @@ apiRouter.get("/books", async (req, res) => {
             u.name AS borrowed_by, 
             u.id AS borrowed_by_id,
             bb.due_date,
-            -- NEW CRITICAL FIELD: Check if due_date is in the past
-            CASE WHEN bb.due_date IS NOT NULL AND bb.due_date < NOW() THEN 1 ELSE 0 END AS overdue
+            CASE WHEN bb.due_date IS NOT NULL AND bb.due_date < NOW() THEN 1 ELSE 0 END AS overdue 
         FROM books b
         LEFT JOIN borrowed_books bb
             ON b.id = bb.book_id AND bb.return_date IS NULL
@@ -91,17 +90,17 @@ apiRouter.get("/books", async (req, res) => {
     const params = [];
     const conditions = [];
 
-    // 1. Filter by Genre 
+    // 1. Filter by Genre (existing logic)
     if (genre) {
         conditions.push("b.genre = ?");
         params.push(genre);
     }
 
-    // 2. Filter by Availability (THIS IS WHAT FIXES THE BORROW & RETURN PAGE)
+    // 2. Filter by Availability 
     if (available === 'true') {
-        conditions.push("bb.id IS NULL"); // Only show available books
+        conditions.push("bb.id IS NULL"); 
     } else if (available === 'false') {
-        conditions.push("bb.id IS NOT NULL"); // Only show borrowed books
+        conditions.push("bb.id IS NOT NULL");
     }
 
     if (conditions.length > 0) {
@@ -272,12 +271,36 @@ apiRouter.get("/search", async (req, res) => {
     }
 });
 
+// 🚨 NEW ROUTE: Get Overdue Notifications
+apiRouter.get("/notifications/overdue", async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                b.title, 
+                u.name AS user_name, 
+                bb.due_date 
+            FROM borrowed_books bb
+            JOIN books b ON bb.book_id = b.id
+            JOIN users u ON bb.user_id = u.id
+            WHERE bb.return_date IS NULL 
+            AND bb.due_date < CURDATE()
+            ORDER BY bb.due_date ASC
+        `;
+        const overdueBooks = await query(sql);
+        res.json(overdueBooks);
+    } catch (err) {
+        // Return an empty array on the front-end so the Header doesn't crash
+        res.json([]); 
+    }
+});
+
+
 /* --------------------- 👤 MEMBER MANAGEMENT ROUTES --------------------- */
 
 // 👤 Get users (Member list - FINAL IMPLEMENTATION with ACTIVE BORROWS CALCULATION)
 apiRouter.get("/users", async (req, res) => {
     try {
-        // --- FINAL, ROBUST SQL QUERY ---
+        // --- FINAL, CORRECT SQL QUERY ---
         const sql = `
             SELECT 
                 u.id AS id, 
@@ -295,18 +318,18 @@ apiRouter.get("/users", async (req, res) => {
         const results = await query(sql); 
         res.json(results);
     } catch (err) {
-        // If the complex query fails (CRASH PREVENTION LOGIC):
-        console.error("DATABASE CRASH ON COMPLEX USER FETCH:", err.message); 
+        // Log the error detail clearly
+        console.error("DATABASE CRASH ON USER FETCH:", err.message); 
         
-        // Attempt to serve the simplest, non-crashing data as a fallback:
+        // This is the simplest query that should always work if the DB is connected
         try {
             const simpleResults = await query("SELECT id, name, email, type FROM users ORDER BY name");
             res.json(simpleResults.map(u => ({ 
                 ...u, 
-                active_borrows: 0 // Provide 0 count when complex query fails
+                active_borrows: 0 
             })));
         } catch (simpleErr) {
-             res.status(500).json({ error: "DB Error: Cannot retrieve any member data. Check credentials." });
+             res.status(500).json({ error: "DB Error: Cannot retrieve any member data. Check credentials/service." });
         }
     }
 });

@@ -31,6 +31,7 @@
     box-shadow: 2px 0 5px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
+    z-index: 600; /* Ensure sidebar stays above expanded panel */
 }
 
 .sidebar .logo {
@@ -68,15 +69,18 @@
     padding: 30px;
 }
 
+/* Base Header Style */
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
     background-color: var(--color-sidebar-bg);
-    padding: 20px;
+    padding: 1rem 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    position: relative; 
+    z-index: 500; 
 }
 
 .main-header h2 {
@@ -92,14 +96,10 @@
 .user-info {
     display: flex;
     align-items: center;
+    gap: 1.5rem; 
 }
 
-.notification {
-    font-size: 1.5rem;
-    margin-right: 20px;
-    cursor: pointer;
-}
-
+/* User Profile */
 .user-profile {
     display: flex;
     align-items: center;
@@ -115,7 +115,164 @@
 .user-avatar { width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; }
 
 
-/* --- Catalogue Page Specifics --- */
+/* ================================================= */
+/* === NOTIFICATION PANEL STYLES (UPDATED FOR LAYOUT) === */
+/* ================================================= */
+
+/* Notification Button and Container */
+.notification-container {
+    position: relative;
+    display: inline-block;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
+
+}
+
+.notification-icon:hover {
+    background-color: #e0e0e0;
+}
+
+/* Base Panel Styles */
+.notification-panel {
+    background: #ffffff;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out; /* Smooth transition for resizing/positioning */
+}
+
+/* 1. Dropdown Mode (Small, appears below icon) */
+.notification-panel.dropdown-mode {
+    position: absolute; 
+    top: calc(100% + 5px); 
+    right: 0;
+    width: 350px; 
+    max-height: 400px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+/* 2. Expanded View (Fills the content area next to sidebar) */
+.notification-panel.expanded-view {
+    position: fixed; 
+    top: 0;
+    /* Aligned next to the sidebar width */
+    left: 250px; 
+    right: 0;
+    bottom: 0;
+    width: auto; 
+    height: 100vh; 
+    max-height: none;
+    border-radius: 0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    margin-top: 0;
+}
+
+/* Panel Header */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    background-color: #f7f7f7;
+    flex-shrink: 0; 
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #666;
+    transition: color 0.2s;
+    line-height: 1; 
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+/* Content Area - Scrollable */
+.panel-content {
+    padding: 0.5rem 0;
+    flex-grow: 1;
+    overflow-y: auto; 
+}
+.notification-panel.dropdown-mode .panel-content {
+    max-height: 300px; 
+}
+
+/* Footer/Actions */
+.panel-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #eee;
+    text-align: center;
+    flex-shrink: 0; 
+}
+
+.view-all-btn {
+    background: none;
+    border: none;
+    color: var(--color-primary); 
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    transition: background-color 0.2s;
+    border-radius: 4px;
+}
+
+.view-all-btn:hover {
+    background-color: #f0e8ff;
+}
+
+/* Individual Notification Item Styling (Placeholder) */
+.notification-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px dotted #f0f0f0;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.dot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.dot.overdue { background-color: #dc3545; } 
+.dot.pending { background-color: #ffc107; } 
+.dot.info { background-color: #17a2b8; } 
+
+/* ================================================= */
+/* === CATALOGUE/MEMBER SPECIFIC STYLES (Existing) === */
+/* ================================================= */
 
 .catalogue-header {
     margin-bottom: 20px;
@@ -129,13 +286,11 @@
     color: #666;
 }
 
-/* ================================================= */
-/* === UPDATED SEARCH BAR STYLING (Modern Look) === */
-/* ================================================= */
+/* --- Search Bar --- */
 
 .search-bar-container {
     display: flex;
-    gap: 15px; /* Spacing between the input wrapper and the buttons */
+    gap: 15px; 
     align-items: center;
     background-color: #fff;
     padding: 15px 20px;
@@ -201,9 +356,7 @@
     background-color: #e0e0e0;
 }
 
-/* ================================================= */
-/* === UPDATED GENRE/MEMBER FILTER PILLS === */
-/* ================================================= */
+/* --- Genre/Member Filter Pills --- */
 
 .genre-filter-container {
     display: flex;
@@ -238,16 +391,13 @@
     border-color: #b299d6;
 }
 
-/* --- Book and Member Card Overhaul Styles Remain Below --- */
-
-/* Book List Grid */
+/* --- Book Card Styles --- */
 .book-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 30px;
 }
 
-/* Book Card Overhaul (Inspired by the image) */
 .book-card {
     background-color: var(--color-card-bg);
     border-radius: 12px;
@@ -385,22 +535,21 @@
 
 /* --- Toast Notification (FIXED POSITION & STYLING) --- */
 #toast {
-    /* Positioning Fix: Makes the toast stay visible even when scrolling */
     visibility: hidden;
-    position: fixed; /* CRITICAL FIX: Stays in the viewport */
+    position: fixed; 
     z-index: 1000;
-    left: 50%; /* Center horizontally */
+    left: 50%; 
     bottom: 30px;
-    transform: translateX(-50%); /* Centers element precisely */
+    transform: translateX(-50%); 
 
     /* Styling */
     min-width: 250px;
-    background-color: #9b59b6; /* Lavender/Medium Purple */
+    background-color: #9b59b6; 
     color: white;
     text-align: center;
     font-weight: bold;
     padding: 12px 20px;
-    border-radius: 8px; /* Slightly rounded corners */
+    border-radius: 8px; 
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     
     /* Animation */
@@ -431,7 +580,7 @@
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    border-left: 5px solid var(--color-primary); /* Purple accent */
+    border-left: 5px solid var(--color-primary); 
     transition: transform 0.2s;
 }
 
@@ -486,16 +635,16 @@
 
 /* Specific Tag Colors */
 .tag-student {
-    background-color: #3498db; /* Blue */
+    background-color: #3498db; 
 }
 .tag-faculty {
-    background-color: #2ecc71; /* Green */
+    background-color: #2ecc71; 
 }
 .tag-public {
-    background-color: #f39c12; /* Orange */
+    background-color: #f39c12; 
 }
 .tag-member {
-    background-color: #9b59b6; /* General Purple */
+    background-color: #9b59b6; 
 }
 
 /* Adjust Add Member Button Color */
@@ -509,7 +658,6 @@
 
 /* --- Borrow & Return Page Styles --- */
 .borrow-return-view {
-    /* This ensures the content has the visual separation of the other major pages */
     padding: 20px;
     background-color: var(--color-sidebar-bg);
     border-radius: 12px;
@@ -519,33 +667,29 @@
 
 /* --- Loan Status and Due Date Styling --- */
 .borrow-status-info {
-    /* Ensures the due date stands out below the borrower's name */
     margin-top: 5px; 
     padding-top: 5px;
     border-top: 1px dashed #eee;
     font-size: 0.9rem;
     color: #444; 
-    text-align: left; /* Align text within the content box */
-    padding-left: 15px; /* Indent slightly for visual appeal */
+    text-align: left; 
+    padding-left: 15px; 
 }
 
 .borrow-status-info strong {
-    /* Make the date bold and easy to read */
     font-weight: 700; 
-    color: var(--color-primary); /* Use deep purple accent for the due date */
+    color: var(--color-primary); 
 }
 
-/* client/src/App.css (ADD these styles) */
-
+/* Due Date Modification Styles */
 .due-date-container {
     display: flex;
-    justify-content: space-between; /* Space out the Due date text and the button */
+    justify-content: space-between; 
     align-items: center;
-    padding-right: 5px; /* Add some space from the edge */
+    padding-right: 5px; 
 }
 
 .modify-date-btn {
-    /* Simple, clean icon button style */
     background: none;
     border: none;
     color: var(--color-primary);
@@ -561,21 +705,17 @@
     background-color: #f0e8ff;
 }
 
-/* client/src/App.css (NEW OVERDUE STYLING) */
-
-/* === Overdue Title Styling === */
+/* Overdue Styling */
 .overdue-title {
-    color: #e74c3c !important; /* Bright red text */
-    animation: pulse-color 1.5s infinite alternate; /* Optional: Flash color gently */
+    color: #e74c3c !important; 
+    animation: pulse-color 1.5s infinite alternate; 
 }
 
-/* === Overdue Card Visual Effect === */
 .book-card.overdue {
-    border: 3px solid #e74c3c; /* Bright red border */
-    animation: pulse-shadow 1.5s infinite alternate; /* Apply flashing shadow animation */
+    border: 3px solid #e74c3c; 
+    animation: pulse-shadow 1.5s infinite alternate; 
 }
 
-/* === KEYFRAMES FOR FLASHING SHADOW === */
 @keyframes pulse-shadow {
     0% {
         box-shadow: 0 0 10px rgba(231, 76, 60, 0.5), 0 4px 15px rgba(0, 0, 0, 0.05);
