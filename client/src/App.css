@@ -875,3 +875,187 @@
 .user-dropdown:focus {
     box-shadow: 0 0 0 2px #dcd0ff; /* Pale purple shadow on focus */
 }
+
+/* --- Dashboard Specific Styles --- */
+
+.dashboard-view {
+    padding: 20px 0; 
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.metric-card {
+    background-color: var(--color-card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.card-icon-wrapper {
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    line-height: 0; 
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.metric-title {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0;
+}
+
+/* Two-Column Layout for Activity */
+.dashboard-sections {
+    display: grid;
+    grid-template-columns: 2fr 1fr; 
+    gap: 30px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #eee;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start; 
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px dotted #f0f0f0;
+}
+
+.activity-icon {
+    font-size: 1.2rem;
+    color: #4b77be;
+}
+
+/* Quick Actions Styling */
+.quick-actions {
+    /* Styling section title applied above */
+}
+
+.action-button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.primary-action {
+    background-color: #5d50c6; 
+    color: white;
+}
+
+.secondary-action {
+    background-color: #e6e6e6;
+    color: var(--color-text);
+}
+
+/* --- Dashboard Recent Activity Styling --- */
+
+.recent-activity .activity-item {
+    /* Base Flex settings for the row */
+    display: flex;
+    align-items: flex-start; /* Align contents to the top */
+    gap: 15px; /* Spacing between icon and text */
+    padding: 12px 0;
+    border-bottom: 1px dotted #f0f0f0;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon-wrapper {
+    flex-shrink: 0; /* Prevents the icon space from shrinking */
+    padding: 8px; /* Padding inside the wrapper */
+    border-radius: 50%;
+    background-color: #fcebeb; /* Light orange background */
+    color: #e74c3c; /* Coral icon color */
+    line-height: 0;
+}
+
+.activity-icon {
+    font-size: 1rem; /* Adjust icon size */
+}
+
+.activity-text-content {
+    display: flex;
+    flex-direction: column; /* Stack status line and due date */
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.4;
+    flex-grow: 1;
+}
+
+.activity-status {
+    /* Ensures this line is separate */
+    margin-bottom: 3px;
+}
+
+.activity-user-name {
+    font-weight: 600;
+    color: var(--color-primary); /* Highlight the user name */
+    margin-right: 4px;
+}
+
+.activity-book-title {
+    font-style: italic; /* Style the book title */
+    margin-left: 4px;
+}
+
+.activity-due-date {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+}
+
+.no-activity-message {
+    padding-top: 10px;
+    color: #666;
+}
+
+.recent-activity-wrapper {
+    /* Styles to make the whole section look like a unified block */
+    background-color: var(--color-sidebar-bg); /* White background block */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.activity-list-container {
+    padding-top: 10px;
+}
+
+.recent-activity .section-title {
+    /* Existing style: Ensures the title is purple */
+    color: var(--color-primary); 
+    border-bottom: 2px solid #eee;
+}

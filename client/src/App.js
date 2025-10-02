@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import MainLayout from './Components/Layout/MainLayout';
 
 // CORRECT PATHS WITH EXPLICIT .js EXTENSION
-import Dashboard from './Components/DashboardPage.js';
+import Dashboard from './Components/Dashboard.js';
 import BookCatalogue from './Components/BookCataloguePage.js'; 
 import Members from './Components/Members.js';
 import BorrowReturn from './Components/BorrowReturn.js';
