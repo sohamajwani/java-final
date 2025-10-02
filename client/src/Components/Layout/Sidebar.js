@@ -8,8 +8,8 @@ const navItems = [
     { to: "/catalogue", label: "Book Catalogue", icon: "📚" },
     { to: "/members", label: "Members", icon: "👤" },
     { to: "/borrow-return", label: "Borrow & Return", icon: "🔄" },
-    { to: "/search", label: "Search", icon: "🔍" },
-    { to: "/settings", label: "Settings", icon: "⚙️" },
+    //{ to: "/search", label: "Search", icon: "🔍" },
+    //{ to: "/settings", label: "Settings", icon: "⚙️" },
 ];
 
 function Sidebar() {
